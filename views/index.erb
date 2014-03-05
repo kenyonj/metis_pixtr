@@ -3,9 +3,12 @@
 <h2>Galleries</h2>
 <div id="galleries">
   <ul>
-    <li><a href='/galleries/1'>Cats</a></li>
-    <li><a href='/galleries/2'>Dogs</a></li>
-    <li><a href='/galleries/3'>Food</a></li>
-
+    <% @galleries.each do |gallery| %>
+      <li>
+        <a href = '/galleries/<%= gallery.id %>'>
+          <%= gallery.name %>
+        </a>
+      </li>
+    <% end %>
   </ul>
 </div>
