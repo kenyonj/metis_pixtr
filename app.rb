@@ -1,5 +1,4 @@
 require 'sinatra'
-require 'pg'
 require 'active_record'
 
 ActiveRecord::Base.establish_connection({
@@ -12,6 +11,7 @@ class Gallery < ActiveRecord::Base
 end
 
 class Image < ActiveRecord::Base
+  belongs_to :gallery
 end
 
 get '/' do
@@ -19,29 +19,64 @@ get '/' do
   erb :index
 end
 
+post '/galleries' do
+  gallery = Gallery.create(params[:gallery])
+  redirect "/galleries/#{gallery.id}"
+end
+
+post '/galleries/:id/images' do
+  gallery = Gallery.find(params[:id])
+  image = Image.new(params[:image])
+  gallery.images << image
+  redirect "/galleries/#{gallery.id}"
+end
+
+get '/galleries/:id/images/new' do
+  @gallery = Gallery.find(params[:id])
+  erb :new_image
+end
+
+get '/galleries/new' do
+  erb :new_gallery
+end
+
 get '/galleries/:id' do
   id = params[:id]
-  gallery = Gallery.find(id)
-  @title = gallery.name.capitalize
-  @images = gallery.images
+  @gallery = Gallery.find(id)
+  @images = @gallery.images
   erb :gallery
 end
 
-get '/newpicture' do
-  name = params["name"]
-  desc = params["desc"]
-  gallery_id = params["gallery_id"]
-  url = params["url"]
-  if name != nil && desc != nil && gallery_id != nil && url != nil
-    image = Image.new
-    image.name = name
-    image.description = desc
-    image.gallery_id = gallery_id
-    image.url = url
-    image.save
-    redirect to("/galleries/#{gallery_id}")
-  else
-    "Sorry, you have not fully defined an image."
-  end
+get '/galleries/:gallery_id/images/:id/edit' do
+  @image = Image.find(params[:id])
+  erb :edit_image
+end
 
+get '/galleries/:id/edit' do
+  @gallery = Gallery.find(params[:id])
+  erb :edit_gallery
+end
+
+patch '/galleries/:gallery_id/images/:id' do
+  image = Image.find(params[:id])
+  image.update(params[:image])
+  redirect "/galleries/#{image.gallery_id}"
+end
+
+patch '/galleries/:id' do
+  gallery = Gallery.find(params[:id])
+  gallery.update(params[:gallery])
+  redirect "/galleries/#{gallery.id}"
+end
+
+delete '/galleries/:gallery_id/images/:id' do
+  image = Image.find(params[:id])
+  image.destroy
+  redirect "/galleries/#{image.gallery_id}"
+end
+
+delete '/galleries/:id' do
+  gallery = Gallery.find(params[:id])
+  gallery.destroy
+  redirect "/"
 end

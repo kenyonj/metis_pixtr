@@ -1,0 +1,20 @@
+<h2>Edit Image</h2>
+
+<form action="/galleries/<%= @image.gallery_id %>/images/<%= @image.id %>" method="POST">
+  <input type="hidden" name="_method" value="PATCH">
+  <div>
+    <label for="image_name">Image Name</label>
+    <input type="text" id="image_name" name="image[name]" value="<%= @image.name %>">
+  </div>
+  <div>
+    <label for="image_description">Image Description</label>
+    <input type="text" id="image_description" name="image[description]" value="<%= @image.description %>">
+  </div>
+  <div>
+    <label for="image_url">Image URL</label>
+    <input type="text" id="image_url" name="image[url]" value="<%= @image.url%>">
+  </div>
+  <div>
+    <input type="submit" value="Update Image">
+  </div>
+</form>
